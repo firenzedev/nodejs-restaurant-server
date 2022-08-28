@@ -6,7 +6,7 @@ const resolvers = require('./resolver');
 const models = require('../db/models');
 const DatabaseSource = require('./datasources/DatabaseSource');
 
-const port = PORT || 4000;
+const port = process.env.PORT || 4000;
 
 function fastifyAppClosePlugin(app) {
   return {
