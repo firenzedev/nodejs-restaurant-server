@@ -1,0 +1,28 @@
+{
+  "name": "nodejs-restaurant-server",
+  "version": "1.0.0",
+  "description": "NodeJS Sample Restaurant Server",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "contributors": [
+    "Tiziano Pessa <tiziano@firenze.dev>",
+    "Lorenzo Spinelli <lorenzo@firenze.dev>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "apollo-datasource": "^3.3.2",
+    "apollo-server-core": "^3.10.0",
+    "apollo-server-fastify": "^3.10.0",
+    "fastify": "^3.29.1",
+    "graphql": "^16.5.0",
+    "lodash": "^4.17.21",
+    "sequelize": "^6.21.3",
+    "sqlite3": "^5.0.11"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.4.1"
+  }
+}
