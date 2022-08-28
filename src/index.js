@@ -42,6 +42,7 @@ async function startApolloServer(typeDefs, resolvers) {
 
   await server.start();
 
+  app.get('/', async (request, reply) => reply.redirect(server.graphqlPath));
   app.register(server.createHandler());
   await app.listen(port, host);
   console.log(`🚀 Server ready at http://localhost:${port}${server.graphqlPath}`);
