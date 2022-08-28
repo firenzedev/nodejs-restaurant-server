@@ -7,6 +7,7 @@ const models = require('../db/models');
 const DatabaseSource = require('./datasources/DatabaseSource');
 
 const port = process.env.PORT || 4000;
+const host = '0.0.0.0';
 
 function fastifyAppClosePlugin(app) {
   return {
@@ -41,7 +42,7 @@ async function startApolloServer(typeDefs, resolvers) {
   await server.start();
 
   app.register(server.createHandler());
-  await app.listen(port);
+  await app.listen(port, host);
   console.log(`🚀 Server ready at http://localhost:${port}${server.graphqlPath}`);
 }
 
