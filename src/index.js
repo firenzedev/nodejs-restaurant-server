@@ -6,7 +6,7 @@ const resolvers = require('./resolver');
 const models = require('../db/models');
 const DatabaseSource = require('./datasources/DatabaseSource');
 
-const PORT = 4000;
+const port = PORT || 4000;
 
 function fastifyAppClosePlugin(app) {
   return {
@@ -42,7 +42,7 @@ async function startApolloServer(typeDefs, resolvers) {
 
   app.register(server.createHandler());
   await app.listen(PORT);
-  console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`);
+  console.log(`🚀 Server ready at http://localhost:${port}${server.graphqlPath}`);
 }
 
 startApolloServer(typeDefs, resolvers);
