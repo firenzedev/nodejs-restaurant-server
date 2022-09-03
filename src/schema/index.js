@@ -77,7 +77,7 @@ module.exports = gql`
   }
 
   type Subscription {
-    "Sends a notification every time a reply is added to a certain review"
-    replyAdded("the id of the review you subscribe to" reviewId: ID!): Reply!
+    "Sends a notification every time a new review is added"
+    reviewAdded: Review!
   }
 `;

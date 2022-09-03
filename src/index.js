@@ -1,13 +1,20 @@
 const { ApolloServer } = require('apollo-server-fastify');
+const fastifyWs = require('@fastify/websocket');
+const { makeHandler } = require('graphql-ws/lib/use/@fastify/websocket');
 const { ApolloServerPluginDrainHttpServer, ApolloServerPluginLandingPageLocalDefault } = require('apollo-server-core');
+const { makeExecutableSchema } = require('@graphql-tools/schema');
 const fastify = require('fastify');
 const typeDefs = require('./schema');
 const resolvers = require('./resolver');
 const models = require('../db/models');
 const DatabaseSource = require('./datasources/DatabaseSource');
+const { PubSub } = require('graphql-subscriptions');
 
 const port = process.env.PORT || 4000;
 const host = '0.0.0.0';
+
+const pubSub = new PubSub();
+const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 function fastifyAppClosePlugin(app) {
   return {
@@ -21,12 +28,13 @@ function fastifyAppClosePlugin(app) {
   };
 }
 
-async function startApolloServer(typeDefs, resolvers) {
+async function startApolloServer(schema) {
   const app = fastify();
 
+  const db = new DatabaseSource({ models });
+
   const server = new ApolloServer({
-    typeDefs,
-    resolvers,
+    schema,
     csrfPrevention: true,
     cache: 'bounded',
     introspection: true,
@@ -36,16 +44,37 @@ async function startApolloServer(typeDefs, resolvers) {
       ApolloServerPluginLandingPageLocalDefault({ embed: true }),
     ],
     dataSources: () => ({
-      db: new DatabaseSource({ models }),
+      db,
+    }),
+    context: () => ({
+      pubSub,
     }),
   });
 
   await server.start();
 
-  app.get('/', async (request, reply) => reply.redirect(server.graphqlPath));
   app.register(server.createHandler());
+
+  app.register(fastifyWs);
+  app.register(async (app) => {
+    app.get('/', async (request, reply) => reply.redirect(server.graphqlPath));
+    app.get(
+      '/subscriptions',
+      { websocket: true },
+      makeHandler({
+        schema,
+        context: () => ({
+          pubSub,
+          dataSources: {
+            db,
+          },
+        }),
+      })
+    );
+  });
+
   await app.listen(port, host);
   console.log(`🚀 Server ready at http://localhost:${port}${server.graphqlPath}`);
 }
 
-startApolloServer(typeDefs, resolvers);
+startApolloServer(schema);

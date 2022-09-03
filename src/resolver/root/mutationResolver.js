@@ -1,7 +1,10 @@
 module.exports = {
   Mutation: {
-    createReview: (_parent, { input }, { dataSources }) =>
-      dataSources.db.createReview(input.restaurantId, input.message, input.rating),
+    createReview: async (_parent, { input }, { dataSources, pubSub }) => {
+      const review = await dataSources.db.createReview(input.restaurantId, input.message, input.rating);
+      pubSub.publish('REVIEW_ADDED', { reviewAdded: review });
+      return review;
+    },
 
     addReply: (_parent, { reviewId, message }, { dataSources }) => dataSources.db.createReply(reviewId, message),
   },
