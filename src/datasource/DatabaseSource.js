@@ -22,6 +22,57 @@ class DatabaseSource extends DataSource {
     return this.models.restaurant.findByPk(id);
   }
 
+  async findRestaurants(ids) {
+    return this.models.restaurant.findAll({
+      where: {
+        id: {
+          [Op.in]: ids,
+        },
+      },
+    });
+  }
+
+  async findReviewsByRestaurants(restaurantIds, rating = 0) {
+    const options = {
+      where: {
+        restaurantId: {
+          [Op.in]: restaurantIds,
+        },
+      },
+    };
+
+    if (rating > 0) {
+      options.where.rating = { [Op.gte]: rating };
+    }
+
+    return this.models.review.findAll(options);
+  }
+
+  async countReviewsByRestaurants(restaurantIds) {
+    return this.models.review.count({
+      where: {
+        restaurantId: {
+          [Op.in]: restaurantIds,
+        },
+      },
+      group: ['restaurantId'],
+      attributes: ['restaurantId'],
+    });
+  }
+
+  async averageRatingForRestaurants(restaurantIds) {
+    const sequelize = this.models.sequelize;
+    return this.models.review.findAll({
+      where: {
+        restaurantId: {
+          [Op.in]: restaurantIds,
+        },
+      },
+      group: ['restaurantId'],
+      attributes: ['restaurantId', [sequelize.fn('AVG', sequelize.col('rating')), 'rating']],
+    });
+  }
+
   async findReviewsByRestaurant(restaurantId, rating = 0) {
     const options = { where: { restaurantId } };
 
@@ -40,6 +91,16 @@ class DatabaseSource extends DataSource {
     });
   }
 
+  async findRepliesByReviews(reviewIds) {
+    return this.models.reply.findAll({
+      where: {
+        reviewId: {
+          [Op.in]: reviewIds,
+        },
+      },
+    });
+  }
+
   async findRepliesByReview(reviewId) {
     return this.models.reply.findAll({
       where: {
@@ -50,6 +111,16 @@ class DatabaseSource extends DataSource {
 
   async findReview(id) {
     return this.models.review.findByPk(id);
+  }
+
+  async findReviews(ids) {
+    return this.models.review.findAll({
+      where: {
+        id: {
+          [Op.in]: ids,
+        },
+      },
+    });
   }
 
   async createReview(restaurantId, message, rating) {

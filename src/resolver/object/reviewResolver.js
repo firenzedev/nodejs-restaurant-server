@@ -1,6 +1,6 @@
 module.exports = {
   Review: {
-    restaurant: (parent, _args, { dataSources }) => dataSources.db.findRestaurant(parent.restaurantId),
-    replies: (parent, _args, { dataSources }) => dataSources.db.findRepliesByReview(parent.id),
+    restaurant: (parent, _args, { loaders }) => loaders.restaurants.load(parent.restaurantId),
+    replies: (parent, _args, { loaders }) => loaders.reviewReplies.load(parent.id),
   },
 };

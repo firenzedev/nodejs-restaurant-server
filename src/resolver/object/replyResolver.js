@@ -1,5 +1,5 @@
 module.exports = {
   Reply: {
-    review: (parent, _args, { dataSources }) => dataSources.db.findReview(parent.reviewId),
+    review: (parent, _args, { loaders }) => loaders.reviews.load(parent.reviewId),
   },
 };

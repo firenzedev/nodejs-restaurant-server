@@ -1,15 +1,10 @@
-const MathUtils = require('../../util/MathUtils');
-
 module.exports = {
   Restaurant: {
-    numberOfReviews: (parent, _args, { dataSources }) => dataSources.db.countReviewsByRestaurant(parent.id),
+    numberOfReviews: (parent, _args, { loaders }) => loaders.restaurantReviewsNumber.load(parent.id),
 
-    rating: async (parent, _args, { dataSources }) => {
-      const reviews = await dataSources.db.findReviewsByRestaurant(parent.id);
-      const ratings = reviews.map((review) => review.rating);
-      return MathUtils.average(ratings);
-    },
+    rating: (parent, _args, { loaders }) =>
+      loaders.restaurantAverageRating.load(parent.id).then((rating) => rating.toFixed(1)),
 
-    reviews: async (parent, { rating }, { dataSources }) => dataSources.db.findReviewsByRestaurant(parent.id, rating),
+    reviews: (parent, { rating }, { loaders }) => loaders.restaurantReviewsWithRating.load({ key: parent.id, rating }),
   },
 };

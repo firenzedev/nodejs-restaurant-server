@@ -7,8 +7,9 @@ const fastify = require('fastify');
 const typeDefs = require('./schema');
 const resolvers = require('./resolver');
 const models = require('../db/models');
-const DatabaseSource = require('./datasources/DatabaseSource');
+const DatabaseSource = require('./datasource/DatabaseSource');
 const { PubSub } = require('graphql-subscriptions');
+const dataLoaderBuilder = require('./dataloader');
 
 const port = process.env.PORT || 4000;
 const host = '0.0.0.0';
@@ -32,6 +33,11 @@ async function startApolloServer(schema) {
   const app = fastify();
 
   const db = new DatabaseSource({ models });
+  const loaders = dataLoaderBuilder(db);
+  const context = () => ({
+    pubSub,
+    loaders,
+  });
 
   const server = new ApolloServer({
     schema,
@@ -46,9 +52,7 @@ async function startApolloServer(schema) {
     dataSources: () => ({
       db,
     }),
-    context: () => ({
-      pubSub,
-    }),
+    context,
   });
 
   await server.start();
@@ -63,12 +67,7 @@ async function startApolloServer(schema) {
       { websocket: true },
       makeHandler({
         schema,
-        context: () => ({
-          pubSub,
-          dataSources: {
-            db,
-          },
-        }),
+        context,
       })
     );
   });
