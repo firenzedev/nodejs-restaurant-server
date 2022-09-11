@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/index.js",
     "build": "sequelize-cli db:migrate && sequelize-cli db:seed:all",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "contributors": [
     "Tiziano Pessa <tiziano@firenze.dev>",
@@ -28,9 +28,24 @@
     "sqlite3": "^5.0.11"
   },
   "devDependencies": {
+    "jest": "^29.0.2",
     "sequelize-cli": "^6.4.1"
   },
   "engines": {
     "node": "16.x"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/index.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 90,
+        "functions": 90,
+        "lines": 90,
+        "statements": 90
+      }
+    }
   }
 }

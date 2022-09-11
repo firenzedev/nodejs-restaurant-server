@@ -2,7 +2,7 @@ const { DataSource } = require('apollo-datasource');
 const { Op } = require('sequelize');
 
 class DatabaseSource extends DataSource {
-  constructor({ models }) {
+  constructor(models) {
     super();
     this.models = models;
   }

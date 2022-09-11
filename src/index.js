@@ -5,7 +5,7 @@ const DatabaseSource = require('./datasource/DatabaseSource');
 const dataLoaderBuilder = require('./dataloader');
 const GraphQLServer = require('./server');
 
-const db = new DatabaseSource({ models });
+const db = new DatabaseSource(models);
 
 const graphQLServer = GraphQLServer({
   typeDefs,
