@@ -5,15 +5,20 @@ const DatabaseSource = require('./datasource/DatabaseSource');
 const dataLoaderBuilder = require('./dataloader');
 const GraphQLServer = require('./server');
 
-const db = new DatabaseSource(models);
+const sourcesGenerator = (user) => {
+  return {
+    db: new DatabaseSource({
+      models,
+      user,
+    }),
+  };
+};
 
 const graphQLServer = GraphQLServer({
   typeDefs,
   resolvers,
-  sources: {
-    db,
-  },
-  loaders: dataLoaderBuilder(db),
+  sourcesGenerator,
+  loadersGenerator: (db) => dataLoaderBuilder(db),
 });
 
 graphQLServer.start();

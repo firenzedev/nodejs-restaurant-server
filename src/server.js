@@ -8,7 +8,7 @@ const { PubSub } = require('graphql-subscriptions');
 const depthLimit = require('graphql-depth-limit');
 
 const GraphQLServer = (options) => {
-  const { typeDefs, resolvers, sources, loaders } = options;
+  const { typeDefs, resolvers, sourcesGenerator, loadersGenerator } = options;
   const port = process.env.PORT || 4000;
   const host = '0.0.0.0';
 
@@ -16,12 +16,19 @@ const GraphQLServer = (options) => {
   const pubSub = new PubSub();
   const schema = makeExecutableSchema({ typeDefs, resolvers });
 
-  const context = () => ({
-    pubSub,
-    loaders,
-  });
+  const context = ({ request }) => {
+    const token = request.headers.authorization || '';
+    const user = sourcesGenerator(null).db.validateToken(token);
 
-  const dataSources = () => sources;
+    const dataSources = sourcesGenerator(user);
+
+    return {
+      pubSub,
+      loaders: loadersGenerator(dataSources.db),
+      user,
+      dataSources,
+    };
+  };
 
   const fastifyAppClosePlugin = (app) => ({
     async serverWillStart() {
@@ -35,7 +42,6 @@ const GraphQLServer = (options) => {
 
   const apolloServer = new ApolloServer({
     schema,
-    dataSources,
     context,
     csrfPrevention: true,
     cache: 'bounded',

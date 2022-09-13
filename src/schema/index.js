@@ -74,6 +74,9 @@ module.exports = gql`
       "A text message, which is the actual content of the reply"
       message: String!
     ): Reply!
+
+    "logs a user in and returns an auth token"
+    login(username: String!, password: String!): String!
   }
 
   type Subscription {

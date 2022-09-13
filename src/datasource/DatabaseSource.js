@@ -1,10 +1,14 @@
 const { DataSource } = require('apollo-datasource');
+const { AuthenticationError } = require('apollo-server-core');
 const { Op } = require('sequelize');
 
+const TOKEN = 'fakeTokenJustForEducationalPurposes';
+
 class DatabaseSource extends DataSource {
-  constructor(models) {
+  constructor({ models, user }) {
     super();
     this.models = models;
+    this.user = user;
   }
 
   async findAllRestaurants(city) {
@@ -124,6 +128,10 @@ class DatabaseSource extends DataSource {
   }
 
   async createReview(restaurantId, message, rating) {
+    if (this.user === null) {
+      throw new AuthenticationError('To create a review user must be authenticated');
+    }
+
     return this.models.review.create({
       restaurantId,
       message,
@@ -132,10 +140,34 @@ class DatabaseSource extends DataSource {
   }
 
   async createReply(reviewId, message) {
+    if (this.user === null) {
+      throw new AuthenticationError('To create a reply user must be authenticated');
+    }
+
     return this.models.reply.create({
       reviewId,
       message,
     });
+  }
+
+  login(username, password) {
+    if (username !== 'guest' || password !== 'secret') {
+      throw new AuthenticationError('Wrong credentials');
+    }
+
+    return TOKEN;
+  }
+
+  validateToken(token) {
+    if (token === TOKEN) {
+      return {
+        id: 123,
+        username: 'guest',
+        role: 'GUEST',
+      };
+    }
+
+    return null;
   }
 }
 

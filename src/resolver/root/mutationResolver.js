@@ -7,5 +7,7 @@ module.exports = {
     },
 
     addReply: (_parent, { reviewId, message }, { dataSources }) => dataSources.db.createReply(reviewId, message),
+
+    login: (_parent, { username, password }, { dataSources }) => dataSources.db.login(username, password),
   },
 };
