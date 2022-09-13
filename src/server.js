@@ -5,6 +5,7 @@ const { ApolloServerPluginDrainHttpServer, ApolloServerPluginLandingPageLocalDef
 const { makeExecutableSchema } = require('@graphql-tools/schema');
 const fastify = require('fastify');
 const { PubSub } = require('graphql-subscriptions');
+const depthLimit = require('graphql-depth-limit');
 
 const GraphQLServer = (options) => {
   const { typeDefs, resolvers, sources, loaders } = options;
@@ -44,6 +45,7 @@ const GraphQLServer = (options) => {
       ApolloServerPluginDrainHttpServer({ httpServer: webServer.server }),
       ApolloServerPluginLandingPageLocalDefault({ embed: true }),
     ],
+    validationRules: [depthLimit(10)],
   });
 
   const subscriptionHandler = makeHandler({
