@@ -23,7 +23,7 @@ const server = GraphQLServer({
   sources: {
     db: mockDb,
   },
-  loaders: dataLoaderBuilder(mockDb),
+  dataLoaderBuilder,
 });
 
 const getFakeRestaurants = () => {
