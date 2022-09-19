@@ -13,7 +13,7 @@ const graphQLServer = GraphQLServer({
   sources: {
     db,
   },
-  loaders: dataLoaderBuilder(db),
+  dataLoaderBuilder,
 });
 
 graphQLServer.start();

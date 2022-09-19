@@ -8,7 +8,7 @@ const { PubSub } = require('graphql-subscriptions');
 const depthLimit = require('graphql-depth-limit');
 
 const GraphQLServer = (options) => {
-  const { typeDefs, resolvers, sources, loaders } = options;
+  const { typeDefs, resolvers, sources, dataLoaderBuilder } = options;
   const port = process.env.PORT || 4000;
   const host = '0.0.0.0';
 
@@ -18,7 +18,7 @@ const GraphQLServer = (options) => {
 
   const context = () => ({
     pubSub,
-    loaders,
+    loaders: dataLoaderBuilder(sources.db),
   });
 
   const dataSources = () => sources;
