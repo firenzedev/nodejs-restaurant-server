@@ -1,4 +1,6 @@
-module.exports = (db) => async (ids) => {
-  const dataset = await db.findRestaurants(ids);
-  return ids.map((id) => dataset.find((row) => row.id == id));
-};
+module.exports =
+  ({ restaurantService }) =>
+  async (ids) => {
+    const dataset = await restaurantService.findRestaurants(ids);
+    return ids.map((id) => dataset.find((row) => row.id == id));
+  };

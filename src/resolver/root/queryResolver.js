@@ -1,9 +1,9 @@
 module.exports = {
   Query: {
-    restaurants: (_parent, { city }, { dataSources }) => dataSources.db.findAllRestaurants(city),
+    restaurants: (_parent, { city }, { services }) => services.restaurantService.findAllRestaurants(city),
 
-    restaurant: (_parent, { id }, { dataSources }) => dataSources.db.findRestaurant(id),
+    restaurant: (_parent, { id }, { services }) => services.restaurantService.findRestaurant(id),
 
-    reviews: (_parent, { restaurantId }, { dataSources }) => dataSources.db.findReviewsByRestaurant(restaurantId),
+    reviews: (_parent, { restaurantId }, { services }) => services.reviewService.findReviewsByRestaurant(restaurantId),
   },
 };

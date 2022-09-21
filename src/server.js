@@ -8,7 +8,7 @@ const { PubSub } = require('graphql-subscriptions');
 const depthLimit = require('graphql-depth-limit');
 
 const GraphQLServer = (options) => {
-  const { typeDefs, resolvers, sourcesGenerator, loadersGenerator } = options;
+  const { typeDefs, resolvers, servicesGenerator, loadersGenerator } = options;
   const port = process.env.PORT || 4000;
   const host = '0.0.0.0';
 
@@ -18,15 +18,14 @@ const GraphQLServer = (options) => {
 
   const context = ({ request }) => {
     const token = request.headers.authorization || '';
-    const user = sourcesGenerator(null).db.validateToken(token);
-
-    const dataSources = sourcesGenerator(user);
+    const user = servicesGenerator.validateAuth(token);
+    const services = servicesGenerator.createServices(user);
+    const loaders = loadersGenerator(services);
 
     return {
       pubSub,
-      loaders: loadersGenerator(dataSources.db),
-      user,
-      dataSources,
+      loaders,
+      services,
     };
   };
 

@@ -1,4 +1,6 @@
-module.exports = (db) => async (ids) => {
-  const dataset = await db.findReviews(ids);
-  return ids.map((id) => dataset.find((row) => row.id == id));
-};
+module.exports =
+  ({ reviewService }) =>
+  async (ids) => {
+    const dataset = await reviewService.findReviews(ids);
+    return ids.map((id) => dataset.find((row) => row.id == id));
+  };

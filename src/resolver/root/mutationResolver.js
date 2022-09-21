@@ -1,13 +1,13 @@
 module.exports = {
   Mutation: {
-    createReview: async (_parent, { input }, { dataSources, pubSub }) => {
-      const review = await dataSources.db.createReview(input.restaurantId, input.message, input.rating);
+    createReview: async (_parent, { input }, { services, pubSub }) => {
+      const review = await services.reviewService.createReview(input.restaurantId, input.message, input.rating);
       pubSub.publish('REVIEW_ADDED', { reviewAdded: review });
       return review;
     },
 
-    addReply: (_parent, { reviewId, message }, { dataSources }) => dataSources.db.createReply(reviewId, message),
+    addReply: (_parent, { reviewId, message }, { services }) => services.replyService.createReply(reviewId, message),
 
-    login: (_parent, { username, password }, { dataSources }) => dataSources.db.login(username, password),
+    login: (_parent, { username, password }, { services }) => services.authService.login(username, password),
   },
 };
